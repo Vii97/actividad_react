@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
@@ -20,7 +20,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function AddExpenses() {
   const {
-    control,
+    register,
     handleSubmit,
     reset,
     formState: { errors },
@@ -62,55 +62,36 @@ export default function AddExpenses() {
       <h1 className="text-2xl font-bold mb-4">Añadir Movimiento</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Controller
-          name="amount"
-          control={control}
-          render={({ field }) => (
-            <Input
-              type="number"
-              label="Cantidad (€)"
-              placeholder="0.00"
-              isInvalid={!!errors.amount}
-              errorMessage={errors.amount?.message}
-              {...field}
-            />
-          )}
+        <Input
+          type="number"
+          label="Cantidad (€)"
+          placeholder="0.00"
+          isInvalid={!!errors.amount}
+          errorMessage={errors.amount?.message}
+          {...register("amount")}
         />
 
-        <Controller
-          name="type"
-          control={control}
-          render={({ field }) => (
-            <Select
-              label="Tipo"
-              placeholder="Selecciona el tipo"
-              selectedKeys={field.value ? [field.value] : []}
-              onChange={(e) => field.onChange(e.target.value)}
-              isInvalid={!!errors.type}
-              errorMessage={errors.type?.message}
-            >
-              <SelectItem key="gasto" value="gasto">
-                Gasto
-              </SelectItem>
-              <SelectItem key="ingreso" value="ingreso">
-                Ingreso
-              </SelectItem>
-            </Select>
-          )}
-        />
+        <Select
+          label="Tipo"
+          placeholder="Selecciona el tipo"
+          isInvalid={!!errors.type}
+          errorMessage={errors.type?.message}
+          {...register("type")}
+        >
+          <SelectItem key="gasto" value="gasto">
+            Gasto
+          </SelectItem>
+          <SelectItem key="ingreso" value="ingreso">
+            Ingreso
+          </SelectItem>
+        </Select>
 
-        <Controller
-          name="description"
-          control={control}
-          render={({ field }) => (
-            <Textarea
-              label="Descripción"
-              placeholder="Describe el movimiento"
-              isInvalid={!!errors.description}
-              errorMessage={errors.description?.message}
-              {...field}
-            />
-          )}
+        <Textarea
+          label="Descripción"
+          placeholder="Describe el movimiento"
+          isInvalid={!!errors.description}
+          errorMessage={errors.description?.message}
+          {...register("description")}
         />
 
         <Button type="submit" color="primary" className="w-full">
