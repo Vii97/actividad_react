@@ -1,8 +1,40 @@
 "use client";
+import { authSchema, AuthSchema } from "@/shared/schemas/auth.schema";
+import { loginService } from "@/shared/services/login.service";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input } from "@nextui-org/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 export default function Login() {
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<AuthSchema>({
+    resolver: zodResolver(authSchema),
+  });
+
+  const onSubmit = async (dataForm: AuthSchema) => {
+    try {
+      const responseData = await loginService(dataForm);
+
+      if (responseData.token) {
+        localStorage.setItem("token", responseData.token);
+        router.push("/dashboard");
+      } else {
+        throw new Error("No se recibió un token");
+      }
+    } catch (error) {
+      console.log(error);
+      // TODO: Manejar el error con un toast por ejemplo
+      alert(error);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-lg text-center">
@@ -12,9 +44,26 @@ export default function Login() {
         <h2 className="font-bold mt-6">Iniciar sesión</h2>
       </div>
 
-      <form action="#" className="mx-auto mb-0 mt-8 max-w-md space-y-4">
-        <Input label="Email" type="email" variant="bordered" />
-        <Input label="Contraseña" type="password" variant="bordered" />
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mx-auto mb-0 mt-8 max-w-md space-y-4"
+      >
+        <Input
+          label="Email"
+          type="email"
+          variant="bordered"
+          {...register("email")}
+          errorMessage={errors.email?.message}
+          isInvalid={!!errors.email}
+        />
+        <Input
+          label="Contraseña"
+          type="password"
+          variant="bordered"
+          {...register("password")}
+          errorMessage={errors.password?.message}
+          isInvalid={!!errors.password}
+        />
 
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">
@@ -24,7 +73,9 @@ export default function Login() {
             </Link>
           </p>
 
-          <Button color="primary">Iniciar sesión</Button>
+          <Button color="primary" type="submit" isLoading={isSubmitting}>
+            Iniciar sesión
+          </Button>
         </div>
       </form>
     </div>

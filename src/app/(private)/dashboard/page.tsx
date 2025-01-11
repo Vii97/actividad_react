@@ -1,6 +1,7 @@
 "use client";
 
 import ExpenseBlock from "@/app/components/expense-block";
+import { getExpensesService } from "@/shared/services/getExpenses.service";
 import { ExpenseBlockProps } from "@/shared/types/Expenses";
 import { useEffect, useMemo, useState } from "react";
 
@@ -15,30 +16,9 @@ export default function Dashboard() {
         setIsLoading(true);
         // Por ahora, usamos datos mockeados
         // Con la API, reemplaza esto con el fetch real
-        const mockData: ExpenseBlockProps[] = [
-          {
-            id: 1,
-            amount: 500,
-            type: "income",
-            description: "Salario",
-          },
-          {
-            id: 2,
-            amount: 100,
-            type: "expense",
-            description: "Comida",
-          },
-          {
-            id: 3,
-            amount: 100,
-            type: "expense",
-            description: "Comida",
-          },
-        ];
+        const resultData = await getExpensesService();
 
-        // Simular delay de API
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setExpenses(mockData);
+        setExpenses(resultData);
       } catch (err) {
         setError("Error al cargar los gastos");
         console.error(err);
@@ -53,11 +33,13 @@ export default function Dashboard() {
   // Calcular el total usando useMemo
   const total = useMemo(() => {
     return expenses.reduce((acc, expense) => {
-      return expense.type === "income"
-        ? acc + expense.amount
-        : acc - expense.amount;
+      // Convertir amount a número y verificar que sea válido
+      const amount = Number(expense.amount);
+      if (isNaN(amount)) return acc;
+
+      return expense.type === "income" ? acc + amount : acc - amount;
     }, 0);
-  }, [expenses]); // Solo recalcula si expenses cambia
+  }, [expenses]);
 
   if (isLoading) {
     return (
@@ -80,9 +62,7 @@ export default function Dashboard() {
       <article className="mt-8 flex items-end justify-between rounded-lg border border-gray-100 bg-white p-6">
         <div>
           <p className="text-sm text-gray-500">Total ingresos menos gastos</p>
-          <p className="text-2xl font-medium text-gray-900">
-            {total.toFixed(2)}€
-          </p>
+          <p className="text-2xl font-medium text-gray-900">{total}€</p>
         </div>
       </article>
 

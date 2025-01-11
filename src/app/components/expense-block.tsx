@@ -49,7 +49,7 @@ const ExpenseBlock: React.FC<ExpenseBlockProps> = ({
               type === "income" ? "text-green-800" : "text-red-800"
             }`}
           >
-            ${amount.toFixed(2)}
+            {amount}€
           </p>
           <p className="text-sm text-gray-500">
             {type === "income" ? "Ingreso" : "Gasto"}: {description}
