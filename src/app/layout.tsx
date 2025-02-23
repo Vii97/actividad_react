@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gestión de ingresos y gastos",
-  description: "Con esta aplicación podrás gestionar tus ingresos y gastos",
+  title: "Xpenses",
+  description: "¡Tu app para gestionar tus ingresos y gastos!",
 };
 
 export default function RootLayout({
@@ -26,8 +26,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-r from-blue-700 to-fuchsia-700 min-h-screen`}
       >
+        <h1 className="text-2xl font-bold text-center mx-auto max-w-screen-xl p-10 sm:px-3 lg:px-8 text-white">
+        Xpenses</h1>
+        
         <Providers>
         {children}
         </Providers>

@@ -1,34 +1,49 @@
 "use client";
 
+import { deleteExpense } from "@/shared/services/deleteExpense.service";
 import { ExpenseBlockProps } from "@/shared/types/Expenses";
+
 import {
-  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React from "react";
 
-const ExpenseBlock: React.FC<ExpenseBlockProps> = ({
-  amount,
-  type,
-  description,
+// Interfaz (Propiedades) del componente
+interface ExpenseBlockComponentProps extends ExpenseBlockProps {
+  onEdit: (expense: ExpenseBlockProps) => void;
+  onDelete: (id: ExpenseBlockProps["id"]) => void;
+}
+
+const ExpenseBlock: React.FC<ExpenseBlockComponentProps> = ({ amount, type, description, id, onEdit, onDelete, 
 }) => {
+  const onDeleteExpense = async () => {
+    try {
+      await deleteExpense(id);
+      onDelete(id);
+    } catch (error) {
+      console.error("Error al eliminar la transacción:", error);
+    }
+  };
+
   return (
     <article
-      className={`flex items-center justify-between gap-4 rounded-lg border border-gray-100 bg-white p-6`}
+      className={`flex items-center justify-between gap-4 rounded-lg border ${
+        type === "income" ? "border-indigo-500" : "border-fuchsia-500"
+      } bg-gray-900 p-6`}
     >
       <div className="flex items-center gap-4">
         <span
           className={`rounded-full p-3 ${
-            type === "income" ? "bg-green-100" : "bg-red-100"
+            type === "income" ? "bg-indigo-200" : "bg-fuchsia-200"
           }`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className={`size-8 ${
-              type === "income" ? "text-green-600" : "text-red-600"
+              type === "income" ? "text-indigo-500" : "text-fuchsia-500"
             }`}
             fill="none"
             viewBox="0 0 24 24"
@@ -46,26 +61,34 @@ const ExpenseBlock: React.FC<ExpenseBlockProps> = ({
         <div>
           <p
             className={`text-2xl font-medium ${
-              type === "income" ? "text-green-800" : "text-red-800"
+              type === "income" ? "text-indigo-500" : "text-fuchsia-500"
             }`}
           >
-            {amount}€
+   
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-sky-300">
             {type === "income" ? "Ingreso" : "Gasto"}: {description}
           </p>
         </div>
       </div>
 
       <div>
-        <Dropdown>
+        <Dropdown className="bg-purple-800 text-white">
           <DropdownTrigger>
-            <Button variant="bordered">Opciones</Button>
           </DropdownTrigger>
-          <DropdownMenu>
-            <DropdownItem key="copy">Más información</DropdownItem>
-            <DropdownItem key="edit">Editar</DropdownItem>
-            <DropdownItem key="delete" className="text-danger" color="danger">
+          <DropdownMenu variant="bordered" color="primary">
+            <DropdownItem
+              key="edit"
+              onPress={() => onEdit({ id, amount, type, description })}
+            >
+              Editar
+            </DropdownItem>
+            <DropdownItem
+              key="delete"
+              className="text-danger"
+              color="danger"
+              onPress={onDeleteExpense}
+            >
               Eliminar
             </DropdownItem>
           </DropdownMenu>

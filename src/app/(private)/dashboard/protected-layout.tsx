@@ -22,10 +22,9 @@ export default function ProtectedLayout({
     }
   }, [router]);
 
-  // Puedes mostrar un indicador de carga mientras verificas el estado
-  // (lo pongo rojo para que se vea va muy rapido)
+
   if (isAuthenticated === null || isAuthenticated === false) {
-    return <div className="h-screen bg-red-500">Loading...</div>;
+    return <div className="h-screen bg-blue-500">Cargando...</div>;
   }
 
   return <>{children}</>;

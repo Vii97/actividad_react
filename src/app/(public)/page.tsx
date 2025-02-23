@@ -1,8 +1,9 @@
 "use client";
+import { toast } from "nextjs-toast-notify";
 import { authSchema, AuthSchema } from "@/shared/schemas/auth.schema";
 import { loginService } from "@/shared/services/login.service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input } from "@heroui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -30,17 +31,23 @@ export default function Login() {
       }
     } catch (error) {
       console.log(error);
-      // TODO: Manejar el error con un toast por ejemplo
+      toast.success("¡Has iniciado sesión!", {
+        duration: 4000,
+        progress: true,
+        position: "top-center",
+        transition: "bounceIn",
+        icon: '',
+        sound: true,
+      });
       alert(error);
     }
   };
 
   return (
-    <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
+    <div className="px-4 py-16 sm:px-6 lg:px-8">
+      <div className="bg-white w-full max-w-md mx-auto rounded-lg p-5">
       <div className="mx-auto max-w-lg text-center">
-        <h1 className="text-2xl font-bold sm:text-3xl">
-          Gestión de ingresos y gastos
-        </h1>
+
         <h2 className="font-bold mt-6">Iniciar sesión</h2>
       </div>
 
@@ -66,18 +73,19 @@ export default function Login() {
         />
 
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-fuchsia-700">
             No tienes cuenta?
             <Link className="underline" href="/register">
-              Registrate
+              Regístrate
             </Link>
           </p>
 
-          <Button color="primary" type="submit" isLoading={isSubmitting}>
+          <Button className="bg-indigo-500 hover:bg-indigo-600 text-white" type="submit" isLoading={isSubmitting}>
             Iniciar sesión
           </Button>
         </div>
       </form>
+    </div>
     </div>
   );
 }

@@ -11,7 +11,7 @@ export async function loginService(credentials: AuthSchema) {
       body: JSON.stringify(credentials),
     }
   );
-
+  // Si la respuesta es exitosa, obtengo los datos, si no, se manda un mensaje de error
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.message || "Error al registrar usuario");
@@ -22,6 +22,5 @@ export async function loginService(credentials: AuthSchema) {
   if (!data.token) {
     throw new Error("No se recibió un token");
   }
-
   return data;
 }

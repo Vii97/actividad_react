@@ -1,76 +1,76 @@
-"use client";
+'use client'
 
-import ExpenseBlock from "@/app/components/expense-block";
-import { getExpensesService } from "@/shared/services/getExpenses.service";
+// Importaciones
 import { ExpenseBlockProps } from "@/shared/types/Expenses";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { getExpenses } from "@/shared/services/getExpenses.service";
+import ExpenseBlock from "@/app/components/expense-block";
+import Statistics from "@/app/components/statistics";
 
+// Definición del componente Dashboard (página principal)
 export default function Dashboard() {
+  // Declaración de constantes usando UseState para manejar sus estados
   const [expenses, setExpenses] = useState<ExpenseBlockProps[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  // Hook de efecto para obtener las transacciones
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
-        setIsLoading(true);
-        // Por ahora, usamos datos mockeados
-        // Con la API, reemplaza esto con el fetch real
-        const resultData = await getExpensesService();
-
+        const resultData = await getExpenses();
         setExpenses(resultData);
-      } catch (err) {
-        setError("Error al cargar los gastos");
-        console.error(err);
+      } catch (error) {
+        console.error("Error al obtener gastos:", error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
-
     fetchExpenses();
   }, []);
 
-  // Calcular el total usando useMemo
-  const total = useMemo(() => {
-    return expenses.reduce((acc, expense) => {
-      // Convertir amount a número y verificar que sea válido
-      const amount = Number(expense.amount);
-      if (isNaN(amount)) return acc;
-
-      return expense.type === "income" ? acc + amount : acc - amount;
-    }, 0);
-  }, [expenses]);
-
-  if (isLoading) {
-    return (
-      <div className="max-w-screen-xl mx-auto px-6">
-        <p>Cargando gastos...</p>
-      </div>
+  // Función para actualizar una transacción
+  const updateExpense = (updatedExpense: ExpenseBlockProps) => {
+    setExpenses((prevExpenses) =>
+      prevExpenses.map((expense) =>
+        expense.id === updatedExpense.id ? updatedExpense : expense
+      )
     );
-  }
+  };
 
-  if (error) {
-    return (
-      <div className="max-w-screen-xl mx-auto px-6">
-        <p className="text-red-500">{error}</p>
-      </div>
+  // Función para eliminar una transacción del estado
+  const deleteExpense = (id: number) => {
+    setExpenses((prevExpenses) =>
+      prevExpenses.filter((expense) => expense.id !== id)
     );
-  }
+  };
 
+  // Devuelvo transacciones y estadísticas
   return (
-    <div className="max-w-screen-xl mx-auto px-6">
-      <article className="mt-8 flex items-end justify-between rounded-lg border border-gray-100 bg-white p-6">
-        <div>
-          <p className="text-sm text-gray-500">Total ingresos menos gastos</p>
-          <p className="text-2xl font-medium text-gray-900">{total}€</p>
-        </div>
-      </article>
+    <div className="bg-white w-full max-w-md mx-auto rounded-lg p-5max-w-screen-xl px-6">
+      {loading ? (
+        <p className="text-center text-sky-700 mt-6">Cargando...</p>
+      ) : (
+        <>
+          <div className="flex flex-col gap-4 py-8">
+            {expenses.length > 0 ? (
+              expenses.map((expense) => (
+                <ExpenseBlock
+                  key={expense.id}
+                  {...expense}
+                  onEdit={updateExpense}
+                  onDelete={deleteExpense}
+                />
+              ))
+            ) : (
+              <p className="text-center text-sky-700">No hay transacciones.</p>
+            )}
+          </div>
 
-      <div className="flex flex-col gap-4 py-8">
-        {expenses.map((expense) => (
-          <ExpenseBlock key={expense.id} {...expense} />
-        ))}
-      </div>
+          <div className="mt-12">
+            <Statistics transactions={expenses} />
+          </div>
+        </>
+      )}
     </div>
   );
 }
