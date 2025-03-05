@@ -75,6 +75,9 @@ const ExpenseBlock: React.FC<ExpenseBlockComponentProps> = ({ amount, type, desc
       <div>
         <Dropdown className="bg-purple-800 text-white">
           <DropdownTrigger>
+            <button className="p-2 rounded text-white bg-purple-700 hover:bg-purple-900">
+              Opciones
+            </button>
           </DropdownTrigger>
           <DropdownMenu variant="bordered" color="primary">
             <DropdownItem
@@ -92,7 +95,7 @@ const ExpenseBlock: React.FC<ExpenseBlockComponentProps> = ({ amount, type, desc
               Eliminar
             </DropdownItem>
           </DropdownMenu>
-        </Dropdown>
+      </Dropdown>
       </div>
     </article>
   );

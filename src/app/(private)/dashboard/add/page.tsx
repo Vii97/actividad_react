@@ -1,6 +1,6 @@
 "use client";
 
-// Importaciones
+// Importaciones necesarias
 import {
   Button,
   Input,
@@ -10,15 +10,16 @@ import {
 } from "@heroui/react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { formSchema, FormSchema } from "@/shared/schemas/form.schema";
 import { createExpense } from "@/shared/services/createExpense.service";
 import { toast } from "nextjs-toast-notify";
- 
-// Component para añadir nuevas transacciones
+
+// Componente para añadir nuevas transacciones
 export default function AddExpenses() {
   const router = useRouter();
-  // Formulario React Hook Form y Zod
+
+  // Configuración del formulario con React Hook Form y Zod para la validación
   const {
     handleSubmit,
     reset,
@@ -32,7 +33,8 @@ export default function AddExpenses() {
       description: "",
     },
   });
-  // Envío del form
+
+  // Función para manejar el envío del formulario
   const onSubmit = async (dataExpense: FormSchema) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -52,7 +54,7 @@ export default function AddExpenses() {
       // Para crear nuevas transacciones
       const responseData = await createExpense(dataExpense);
       if (responseData) {
-        console.log(responseData)
+        console.log(responseData);
         reset();
         router.push("/dashboard");
         toast.success("¡Transacción creada!", {
@@ -76,10 +78,11 @@ export default function AddExpenses() {
       });
     }
   };
-// Campos (fields) para Cantidad (amount), Ingreso/Gasto (type), Descripción, enviar formulario
+
+  // Campos (fields) para Cantidad (amount), Ingreso/Gasto (type), Descripción, enviar formulario
   return (
     <div className="max-w-md mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Añadir operación</h1>
+      <h1 className="text-2xl font-bold mb-4 text-white">Añadir transacción</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Controller
@@ -125,6 +128,7 @@ export default function AddExpenses() {
             </Select>
           )}
         />
+
         <Controller
           name="description"
           control={control}
@@ -138,7 +142,8 @@ export default function AddExpenses() {
             />
           )}
         />
-        <Button type="submit" isLoading={isSubmitting} className="w-full bg-sky-300">
+
+        <Button type="submit" isLoading={isSubmitting} color="primary">
           Guardar
         </Button>
       </form>

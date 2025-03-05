@@ -3,7 +3,7 @@
 // Importaciones
 import { ExpenseBlockProps } from "@/shared/types/Expenses";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
+import { useMemo } from "react";
 
 // Interfaz (Propiedades) del componente
 interface StatisticsProps {
@@ -12,21 +12,21 @@ interface StatisticsProps {
 
 // Component StatisticsProps
 const Statistics: React.FC<StatisticsProps> = ({ transactions }) => {
+  // Calculo los valores con useMemo para evitar recalculaciones innecesarias
+  const { incomes, expenses, total } = useMemo(() => {
+    let incomes = 0;
+    let expenses = 0;
 
-  // Declaración de variables locales para ingresos y gastos
-  let incomes = 0;
-  let expenses = 0;
+    transactions.forEach(({ type, amount }) => {
+      const value = Number(amount);
+      if (!isNaN(value)) {
+        if (type === "income") incomes += value;
+        else if (type === "expense") expenses += value;
+      }
+    });
 
-  // Recorro las transacciones para sumar ingresos y gastos
-  transactions.forEach(({ type, amount }) => {
-    const value = Number(amount);
-    if (!isNaN(value)) {
-      if (type === "income") incomes += value;
-      else if (type === "expense") expenses += value;
-    }
-  });
-  // Calculo el total de transacciones con la diferencia entre ingresos y gastos
-  const total = incomes - expenses;
+    return { incomes, expenses, total: incomes - expenses };
+  }, [transactions]);
 
   // Array de datos para el gráfico de barras
   const data = [
@@ -34,7 +34,8 @@ const Statistics: React.FC<StatisticsProps> = ({ transactions }) => {
     { name: "Gastos", value: expenses, color: "#d946ef" }, 
     { name: "Total", value: total, color: "#6b21a8" },      
   ];
- // Componente de estadísticas de ingresos, gastos y total final de transacciones, con un gráfico de barras de Recharts
+
+  // Componente de estadísticas de ingresos, gastos y total final de transacciones, con un gráfico de barras de Recharts
   return (
     <div className="bg-white w-full max-w-md mx-auto rounded-lg p-5">
       <h2 className="text-xl font-bold mb-4">Estadísticas</h2>
@@ -52,11 +53,11 @@ const Statistics: React.FC<StatisticsProps> = ({ transactions }) => {
       <div className="mt-6">
         <h3 className="text-lg font-bold mb-2">Gráficos</h3>
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={data}>
+          <BarChart data={data} barGap={5}>
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="value" fill="#8884d8">
+            <Bar dataKey="value">
               {data.map((entry, index) => (
                 <Bar key={index} dataKey="value" fill={entry.color} />
               ))}

@@ -24,7 +24,7 @@ export default function ProtectedLayout({
 
 
   if (isAuthenticated === null || isAuthenticated === false) {
-    return <div className="h-screen bg-blue-500">Cargando...</div>;
+    return <div className="h-screen bg-indigo-500">Cargando...</div>;
   }
 
   return <>{children}</>;

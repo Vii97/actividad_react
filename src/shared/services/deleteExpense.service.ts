@@ -20,8 +20,5 @@ export const deleteExpense = async (id: ExpenseBlockProps["id"]) => {
     }
     // Si la respuesta es exitosa, convierto el body de la respuesta a JSON y retorno los datos
     const data = await response.json();
-    if (!data.token) {
-      throw new Error("No se recibió un token");
-    }
     return data;
   };
