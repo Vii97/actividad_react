@@ -1,5 +1,3 @@
-"use client";
-
 import { deleteExpense } from "@/shared/services/deleteExpense.service";
 import { ExpenseBlockProps } from "@/shared/types/Expenses";
 
@@ -11,14 +9,12 @@ import {
 } from "@heroui/react";
 import React from "react";
 
-// Interfaz (Propiedades) del componente
 interface ExpenseBlockComponentProps extends ExpenseBlockProps {
-  onEdit: (expense: ExpenseBlockProps) => void;
   onDelete: (id: ExpenseBlockProps["id"]) => void;
+  onEdit: (expense: ExpenseBlockProps) => void;
 }
 
-const ExpenseBlock: React.FC<ExpenseBlockComponentProps> = ({ amount, type, description, id, onEdit, onDelete, 
-}) => {
+const ExpenseBlock: React.FC<ExpenseBlockComponentProps> = ({ amount, type, description, id, onDelete, onEdit }) => {
   const onDeleteExpense = async () => {
     try {
       await deleteExpense(id);
@@ -26,6 +22,10 @@ const ExpenseBlock: React.FC<ExpenseBlockComponentProps> = ({ amount, type, desc
     } catch (error) {
       console.error("Error al eliminar la transacción:", error);
     }
+  };
+
+  const handleEdit = () => {
+    onEdit({ id, amount, type, description });
   };
 
   return (
@@ -64,7 +64,7 @@ const ExpenseBlock: React.FC<ExpenseBlockComponentProps> = ({ amount, type, desc
               type === "income" ? "text-indigo-500" : "text-fuchsia-500"
             }`}
           >
-   
+            {amount}
           </p>
           <p className="text-sm text-sky-300">
             {type === "income" ? "Ingreso" : "Gasto"}: {description}
@@ -80,10 +80,7 @@ const ExpenseBlock: React.FC<ExpenseBlockComponentProps> = ({ amount, type, desc
             </button>
           </DropdownTrigger>
           <DropdownMenu variant="bordered" color="primary">
-            <DropdownItem
-              key="edit"
-              onPress={() => onEdit({ id, amount, type, description })}
-            >
+            <DropdownItem key="edit" onPress={handleEdit}>
               Editar
             </DropdownItem>
             <DropdownItem
@@ -95,7 +92,7 @@ const ExpenseBlock: React.FC<ExpenseBlockComponentProps> = ({ amount, type, desc
               Eliminar
             </DropdownItem>
           </DropdownMenu>
-      </Dropdown>
+        </Dropdown>
       </div>
     </article>
   );
